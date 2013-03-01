@@ -32,16 +32,10 @@ void fft(double *in, double *out, size_t size, double *max, double *min)
 	int i;
 	double t;
 	fftw_plan p;
-	fftw_complex *in_c = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * size);
 	fftw_complex *out_c = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * size);
 	*min = 0;
 	*max = 0;
-	for(i = 0; i < size; i++)
-	{
-		in_c[i][0] = in[i];
-		in_c[i][1] = 0.0;
-	}
-	p = fftw_plan_dft_1d(N * 2, in_c, out_c, FFTW_FORWARD, FFTW_ESTIMATE);
+	p = fftw_plan_dft_r2c_1d(N, in, out_c, FFTW_ESTIMATE);
 	fftw_execute(p);
 	for(i = 0; i < N; i++)
 	{
@@ -54,7 +48,6 @@ void fft(double *in, double *out, size_t size, double *max, double *min)
 	}
 	out[0] = 0;
 	fftw_destroy_plan(p);
-	fftw_free(in_c);
 	fftw_free(out_c);
 }
 
