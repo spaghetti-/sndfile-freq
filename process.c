@@ -54,11 +54,10 @@ void fft(double *in, double *out, size_t size, double *max, double *min)
 void seperate_channels(double *in, double *in_l, double *in_r, SF_INFO *inf, size_t count)
 {
 	int i, j;
-	for(i = 0, j = 0; i < count; i++)
+	for(i = 0, j = 0; i < count; i++, j++)
 	{
 		in_l[j] = in[i];
 		in_r[j] = in[++i];
-		j++;
 	}
 }
 
