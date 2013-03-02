@@ -23,6 +23,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Input file couldn't be opened.");
 		return 1;
 	}
-	process(sf, &inf);
+	//process(sf, &inf);
+	test(sf, &inf);
 	return 0;
 }

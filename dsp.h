@@ -13,5 +13,6 @@ void process(SNDFILE *sf, SF_INFO *inf);
 void hann(double *in, int n);
 void hamming(double *in, int n);
 void fft(double *in, double *out, size_t size, double *max, double *min);
+void test(SNDFILE *sf, SF_INFO *inf);
 
 #endif /* DSP_H_ */

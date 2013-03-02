@@ -53,6 +53,13 @@ void fft(double *in, double *out, size_t size, double *max, double *min)
 
 void seperate_channels(double *in, double *in_l, double *in_r, SF_INFO *inf, size_t count)
 {
+	int i, j;
+	for(i = 0, j = 0; i < count; i++)
+	{
+		in_l[j] = in[i];
+		in_r[j] = in[++i];
+		j++;
+	}
 }
 
 
@@ -82,4 +89,24 @@ void process(SNDFILE *sf, SF_INFO *inf)
 	sf_close(sf);
 	free(data);
 	free(output);
+}
+
+void test(SNDFILE *sf, SF_INFO *inf)
+{
+	size_t c, i;
+	double *data, *left, *right;
+	data = (double *) malloc(sizeof(double) * N * inf->channels);
+	left = (double *) malloc(sizeof(double) * N);
+	right = (double *) malloc(sizeof(double) * N);
+	while((c = sf_readf_double(sf, data, N)) > 0)
+	{
+		seperate_channels(data, left, right, inf, N * inf->channels);
+		for(i = 0; i < N; i++)
+		{
+			fprintf(stdout, "%g\t%g\n", left[i], right[i]);
+		}
+	}
+	free(data);
+	free(left);
+	free(right);
 }
