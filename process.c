@@ -51,6 +51,10 @@ void fft(double *in, double *out, size_t size, double *max, double *min)
 	fftw_free(out_c);
 }
 
+void seperate_channels(double *in, double *in_l, double *in_r, SF_INFO *inf, size_t count)
+{
+}
+
 
 void process(SNDFILE *sf, SF_INFO *inf)
 {
