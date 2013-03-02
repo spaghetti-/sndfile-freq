@@ -66,46 +66,38 @@ void process(SNDFILE *sf, SF_INFO *inf)
 {
 	int i;
 	size_t data_size, c;
-	double *data, *output, min, max, dB;
+	double *data, *output_l, *output_r, *left, *right, min, max_l, dB_l;
+	double max_r, dB_r;
 
 	data_size = inf->channels * N; /* N samples */
 	data = (double *) malloc(sizeof(double) * data_size);
-	output = (double *) malloc(sizeof(double) * N);
+	left = (double *) malloc(sizeof(double) * N);
+	right = (double *) malloc(sizeof(double) * N);
+	output_l = (double *) malloc(sizeof(double) * N);
+	output_r = (double *) malloc(sizeof(double) * N);
 
 	while((c = sf_readf_double(sf, data, N)) > 0)
 	{
 		hamming(data, data_size);
+		seperate_channels(data, left, right, inf, data_size);
 		//hann(data, data_size);
-		fft(data, output, data_size, &max, &min);
+		//fft(data, output, data_size, &max, &min);
+		fft(left, output_l, N, &max_l, &min);
+		fft(right, output_r, N, &max_r, &min);
 		for(i = 0; i < N; i++)
 		{
-			dB = 10 * log10(output[i] / max);
+			output_l[i] = output_l[i] == 0 ? MIN : output_l[i];
+			output_r[i] = output_r[i] == 0 ? MIN : output_r[i];
+			dB_l = 10 * log10(output_l[i] / max_l);
+			dB_r = 10 * log10(output_r[i] / max_r);
 			fprintf(stdout, "%d, ", i * inf->samplerate / (N * 2));
-			fprintf(stdout, "%g\n", dB);
+			fprintf(stdout, "%g ", dB_l);
+			fprintf(stdout, "%g\n", dB_r);
 		}
 	}
 
 	sf_close(sf);
 	free(data);
-	free(output);
-}
-
-void test(SNDFILE *sf, SF_INFO *inf)
-{
-	size_t c, i;
-	double *data, *left, *right;
-	data = (double *) malloc(sizeof(double) * N * inf->channels);
-	left = (double *) malloc(sizeof(double) * N);
-	right = (double *) malloc(sizeof(double) * N);
-	while((c = sf_readf_double(sf, data, N)) > 0)
-	{
-		seperate_channels(data, left, right, inf, N * inf->channels);
-		for(i = 0; i < N; i++)
-		{
-			fprintf(stdout, "%g\t%g\n", left[i], right[i]);
-		}
-	}
-	free(data);
-	free(left);
-	free(right);
+	free(output_l);
+	free(output_r);
 }
